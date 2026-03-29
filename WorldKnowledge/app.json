@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "World Knowledge Engine",
+    "slug": "WorldKnowledge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF8F0"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.worldknowledge.app",
+      "infoPlist": {
+        "CFBundleDisplayName": "WorldKnowledge"
+      }
+    },
+    "android": {
+      "package": "com.worldknowledge.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF8F0",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "locales": {
+      "ja": "./src/i18n/locales/ja.ts",
+      "en": "./src/i18n/locales/en.ts"
+    },
+    "plugins": [
+      "expo-localization"
+    ]
+  }
+}
