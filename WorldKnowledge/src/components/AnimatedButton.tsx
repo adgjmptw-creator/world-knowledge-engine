@@ -3,6 +3,7 @@
  *
  * タップ時にバウンスアニメーションが付いた子供向けボタン。
  * 押した感触を視覚的に伝えることで、5歳児でも操作しやすくする。
+ * 日本語ルビ表記にも対応（漢字の上にふりがなを表示）。
  */
 
 import React, { useRef } from 'react';
@@ -16,6 +17,8 @@ import {
   Text,
 } from 'react-native';
 import { Colors, FontSizes, BorderRadius, Shadows, Spacing } from '../constants/theme';
+import { RubyText } from './RubyText';
+import { currentLanguage } from '../i18n';
 
 interface AnimatedButtonProps {
   /** ボタンのラベルテキスト */
@@ -85,6 +88,13 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
     large: FontSizes.title,
   };
 
+  const labelStyle: TextStyle = {
+    ...styles.label,
+    fontSize: fontSizes[size],
+    color: textColor,
+    ...(textStyle as object),
+  };
+
   return (
     <TouchableWithoutFeedback
       onPress={disabled ? undefined : onPress}
@@ -105,15 +115,12 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       >
         <View style={styles.content}>
           {icon && <Text style={styles.icon}>{icon}</Text>}
-          <Text
-            style={[
-              styles.label,
-              { fontSize: fontSizes[size], color: textColor },
-              textStyle,
-            ]}
-          >
-            {label}
-          </Text>
+          <RubyText
+            text={label}
+            style={labelStyle}
+            rubyStyle={{ color: textColor, opacity: 0.85 }}
+            enableRuby={currentLanguage === 'ja'}
+          />
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
