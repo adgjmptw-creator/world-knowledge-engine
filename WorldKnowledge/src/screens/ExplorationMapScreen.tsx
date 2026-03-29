@@ -24,6 +24,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { REGIONS, RegionInfo } from '../constants/regions';
 import { loadUserProgress } from '../services/storageService';
@@ -83,13 +84,15 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* ヘッダー */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('map.title')} 🗺️</Text>
-        <Text style={styles.totalProgress}>
-          {t('map.countriesDiscovered', {
+        <RubyText text={`${t('map.title')} 🗺️`} style={styles.title} enableRuby={currentLanguage === 'ja'} />
+        <RubyText
+          text={t('map.countriesDiscovered', {
             count: totalDiscovered,
             total: countries.length,
           })}
-        </Text>
+          style={styles.totalProgress}
+          enableRuby={currentLanguage === 'ja'}
+        />
       </View>
 
       {/* 地域タイルグリッド */}
@@ -112,9 +115,11 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <Text style={styles.tileEmoji}>{region.emoji}</Text>
-                <Text style={styles.tileName}>
-                  {region.name[currentLanguage as keyof typeof region.name] || region.name.en}
-                </Text>
+                <RubyText
+                  text={region.name[currentLanguage as keyof typeof region.name] || region.name.en}
+                  style={styles.tileName}
+                  enableRuby={currentLanguage === 'ja'}
+                />
                 {/* 進捗バー */}
                 <View style={styles.tileProgressBg}>
                   <View
@@ -127,9 +132,11 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
                     ]}
                   />
                 </View>
-                <Text style={styles.tileCount}>
-                  {t('map.regionProgress', { count: discovered, total })}
-                </Text>
+                <RubyText
+                  text={t('map.regionProgress', { count: discovered, total })}
+                  style={styles.tileCount}
+                  enableRuby={currentLanguage === 'ja'}
+                />
               </TouchableOpacity>
 
               {/* 展開時: 発見済み国旗一覧 */}

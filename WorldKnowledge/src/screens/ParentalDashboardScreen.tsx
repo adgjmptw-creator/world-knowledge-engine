@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { FlagImage } from '../components/FlagImage';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import {
   loadUserProgress,
@@ -34,6 +35,7 @@ import {
   saveParentalSettings,
   resetAllData,
 } from '../services/storageService';
+import { currentLanguage } from '../i18n';
 import { UserProgress, ParentalSettings, RootStackParamList, CountryData } from '../types';
 import { getAllCountries } from '../data';
 
@@ -137,7 +139,7 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* タイトル */}
-      <Text style={styles.title}>{t('parent.dashboardTitle')}</Text>
+      <RubyText text={t('parent.dashboardTitle')} style={styles.title} enableRuby={currentLanguage === 'ja'} />
 
       {/* 学習レポート 2×2グリッド */}
       <View style={styles.statsGrid}>
@@ -145,34 +147,36 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
         <View style={[styles.statCard, { borderLeftColor: Colors.green }]}>
           <Text style={styles.statEmoji}>🏆</Text>
           <Text style={styles.statValue}>{masteredCountries.length}</Text>
-          <Text style={styles.statLabel}>{t('parent.masteredCountries')}</Text>
+          <RubyText text={t('parent.masteredCountries')} style={styles.statLabel} enableRuby={currentLanguage === 'ja'} />
         </View>
         {/* ニガテな国 */}
         <View style={[styles.statCard, { borderLeftColor: Colors.accent }]}>
           <Text style={styles.statEmoji}>📝</Text>
           <Text style={styles.statValue}>{weakCountries.length}</Text>
-          <Text style={styles.statLabel}>{t('parent.weakCountries')}</Text>
+          <RubyText text={t('parent.weakCountries')} style={styles.statLabel} enableRuby={currentLanguage === 'ja'} />
         </View>
         {/* 総回答数 */}
         <View style={[styles.statCard, { borderLeftColor: Colors.primary }]}>
           <Text style={styles.statEmoji}>🎯</Text>
           <Text style={styles.statValue}>{progress.totalQuestionsAnswered}</Text>
-          <Text style={styles.statLabel}>{t('parent.totalAnswered')}</Text>
+          <RubyText text={t('parent.totalAnswered')} style={styles.statLabel} enableRuby={currentLanguage === 'ja'} />
         </View>
         {/* 正答率 */}
         <View style={[styles.statCard, { borderLeftColor: Colors.purple }]}>
           <Text style={styles.statEmoji}>📊</Text>
           <Text style={styles.statValue}>{accuracyPercent}%</Text>
-          <Text style={styles.statLabel}>{t('parent.accuracy')}</Text>
+          <RubyText text={t('parent.accuracy')} style={styles.statLabel} enableRuby={currentLanguage === 'ja'} />
         </View>
       </View>
 
       {/* マスターした国旗一覧 */}
       {masteredCountries.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            🏆 {t('parent.masteredCountries')}
-          </Text>
+          <RubyText
+            text={`🏆 ${t('parent.masteredCountries')}`}
+            style={styles.sectionTitle}
+            enableRuby={currentLanguage === 'ja'}
+          />
           <View style={styles.flagRow}>
             {masteredCountries.slice(0, 20).map(c => (
               <FlagImage
@@ -196,9 +200,11 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
       {/* ニガテな国旗一覧 */}
       {weakCountries.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            📝 {t('parent.weakCountries')}
-          </Text>
+          <RubyText
+            text={`📝 ${t('parent.weakCountries')}`}
+            style={styles.sectionTitle}
+            enableRuby={currentLanguage === 'ja'}
+          />
           <View style={styles.flagRow}>
             {weakCountries.map(c => (
               <View key={c.id} style={styles.weakItem}>
@@ -217,13 +223,15 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* プレイ時間制限設定 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>⏰ {t('parent.playTimeLimit')}</Text>
+        <RubyText text={`⏰ ${t('parent.playTimeLimit')}`} style={styles.sectionTitle} enableRuby={currentLanguage === 'ja'} />
 
-        <Text style={styles.timeLimitValue}>
-          {timeLimit >= 120 || timeLimit === 0
+        <RubyText
+          text={timeLimit >= 120 || timeLimit === 0
             ? t('parent.playTimeUnlimited')
             : t('parent.minutes', { count: timeLimit })}
-        </Text>
+          style={styles.timeLimitValue}
+          enableRuby={currentLanguage === 'ja'}
+        />
 
         <Slider
           style={styles.slider}
@@ -237,9 +245,11 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
           thumbTintColor={Colors.primaryDark}
         />
 
-        <Text style={styles.todayPlay}>
-          {t('parent.playTimeCurrent', { minutes: todayPlayMinutes })}
-        </Text>
+        <RubyText
+          text={t('parent.playTimeCurrent', { minutes: todayPlayMinutes })}
+          style={styles.todayPlay}
+          enableRuby={currentLanguage === 'ja'}
+        />
       </View>
 
       {/* === リセットセクション === */}
@@ -264,9 +274,11 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
         />
       ) : (
         <View style={styles.resetConfirmCard}>
-          <Text style={styles.resetQuestion}>
-            {t('parent.resetAuthQuestion', { a: resetA, b: resetB })}
-          </Text>
+          <RubyText
+            text={t('parent.resetAuthQuestion', { a: resetA, b: resetB })}
+            style={styles.resetQuestion}
+            enableRuby={currentLanguage === 'ja'}
+          />
           <TextInput
             style={styles.resetInput}
             value={resetAnswer}

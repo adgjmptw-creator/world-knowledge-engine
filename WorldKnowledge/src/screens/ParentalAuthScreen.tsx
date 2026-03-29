@@ -17,7 +17,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnimatedButton } from '../components/AnimatedButton';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { currentLanguage } from '../i18n';
 import { RootStackParamList } from '../types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ParentalAuth'>;
@@ -56,12 +58,14 @@ export const ParentalAuthScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.lockEmoji}>🔒</Text>
 
         {/* タイトル */}
-        <Text style={styles.title}>{t('parent.authTitle')}</Text>
+        <RubyText text={t('parent.authTitle')} style={styles.title} enableRuby={currentLanguage === 'ja'} />
 
         {/* 掛け算の問題 */}
-        <Text style={styles.question}>
-          {t('parent.authQuestion', { a, b })}
-        </Text>
+        <RubyText
+          text={t('parent.authQuestion', { a, b })}
+          style={styles.question}
+          enableRuby={currentLanguage === 'ja'}
+        />
 
         {/* 回答入力欄 */}
         <TextInput
@@ -80,7 +84,7 @@ export const ParentalAuthScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* エラーメッセージ */}
         {errorMessage ? (
-          <Text style={styles.error}>{errorMessage}</Text>
+          <RubyText text={errorMessage} style={styles.error} enableRuby={currentLanguage === 'ja'} />
         ) : null}
 
         {/* 送信ボタン */}

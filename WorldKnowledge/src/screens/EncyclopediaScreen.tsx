@@ -23,6 +23,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { loadUserProgress } from '../services/storageService';
 import { speakCountryName } from '../services/ttsService';
@@ -100,7 +101,7 @@ export const EncyclopediaScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.englishName}>{item.nameEn}</Text>
             </>
           ) : (
-            <Text style={styles.lockedText}>{t('encyclopedia.notYetDiscovered')}</Text>
+            <RubyText text={t('encyclopedia.notYetDiscovered')} style={styles.lockedText} enableRuby={currentLanguage === 'ja'} />
           )}
         </View>
 
@@ -120,7 +121,7 @@ export const EncyclopediaScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       {/* ヘッダー */}
       <View style={styles.header}>
-        <Text style={styles.title}>{t('encyclopedia.title')} 📖</Text>
+        <RubyText text={`${t('encyclopedia.title')} 📖`} style={styles.title} enableRuby={currentLanguage === 'ja'} />
         <Text style={styles.count}>
           {discoveredCount} / {countries.length}
         </Text>

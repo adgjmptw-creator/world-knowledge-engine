@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
 import { AnimatedButton } from '../components/AnimatedButton';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { generateSpecialChallengeQuestion, processAnswer } from '../services/quizEngine';
 import { loadUserProgress, saveUserProgress } from '../services/storageService';
@@ -131,7 +132,7 @@ export const SpecialChallengeScreen: React.FC<Props> = ({ navigation }) => {
     return (
       <View style={styles.completedContainer}>
         <Text style={styles.completedEmoji}>🎊🏆🎊</Text>
-        <Text style={styles.completedTitle}>{t('special.completed')}</Text>
+        <RubyText text={t('special.completed')} style={styles.completedTitle} enableRuby={currentLanguage === 'ja'} />
         <AnimatedButton
           label={t('parent.back')}
           onPress={() => navigation.navigate('Home')}
@@ -155,12 +156,12 @@ export const SpecialChallengeScreen: React.FC<Props> = ({ navigation }) => {
       {/* ヘッダー */}
       <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
         <Text style={styles.headerEmoji}>⭐</Text>
-        <Text style={styles.headerTitle}>{t('special.title')}</Text>
+        <RubyText text={t('special.title')} style={styles.headerTitle} enableRuby={currentLanguage === 'ja'} />
       </Animated.View>
 
       {/* 豆知識ヒントカード */}
       <Animated.View style={[styles.funFactCard, { opacity: fadeAnim }]}>
-        <Text style={styles.funFactText}>{funFact}</Text>
+        <RubyText text={funFact} style={styles.funFactText} enableRuby={currentLanguage === 'ja'} />
         <TouchableOpacity
           style={styles.speakButton}
           onPress={() => speakFunFact(funFact, currentLanguage)}
@@ -170,7 +171,7 @@ export const SpecialChallengeScreen: React.FC<Props> = ({ navigation }) => {
       </Animated.View>
 
       {/* 問い */}
-      <Text style={styles.questionText}>{t('special.whichCountry')}</Text>
+      <RubyText text={t('special.whichCountry')} style={styles.questionText} enableRuby={currentLanguage === 'ja'} />
 
       {/* 4つの国旗選択肢 */}
       <View style={styles.choicesGrid}>

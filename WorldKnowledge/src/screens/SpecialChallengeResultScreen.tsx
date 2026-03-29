@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
 import { ConfettiAnimation } from '../components/ConfettiAnimation';
+import { RubyText } from '../components/RubyText';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows, AnimationDuration } from '../constants/theme';
 import { speakCountryName, speakFunFact, stopSpeaking } from '../services/ttsService';
@@ -93,12 +94,11 @@ export const SpecialChallengeResultScreen: React.FC<Props> = ({ navigation, rout
         ]}
       >
         <Text style={styles.headerEmoji}>{isCorrect ? '⭐' : '💪'}</Text>
-        <Text style={[
-          styles.headerText,
-          isCorrect ? { color: Colors.purple } : { color: Colors.accent },
-        ]}>
-          {feedbackMessage}
-        </Text>
+        <RubyText
+          text={feedbackMessage}
+          style={[styles.headerText, isCorrect ? { color: Colors.purple } : { color: Colors.accent }]}
+          enableRuby={currentLanguage === 'ja'}
+        />
       </Animated.View>
 
       {/* 国旗＋国名 */}
@@ -120,14 +120,14 @@ export const SpecialChallengeResultScreen: React.FC<Props> = ({ navigation, rout
       {/* 使用した豆知識ヒント */}
       <Animated.View style={[styles.hintCard, { opacity: fadeAnim }]}>
         <Text style={styles.hintLabel}>💡 {t('result.hint', { hint: '' }).replace('{{hint}}', '').trim()}</Text>
-        <Text style={styles.hintText}>{funFactUsed}</Text>
+        <RubyText text={funFactUsed} style={styles.hintText} enableRuby={currentLanguage === 'ja'} />
       </Animated.View>
 
       {/* 豆知識セクション */}
       {funFacts.map((fact, index) => (
         <Animated.View key={index} style={[styles.funFactCard, { opacity: fadeAnim }]}>
           <View style={styles.funFactHeader}>
-            <Text style={styles.funFactLabel}>{t('result.funFact')} {index + 1}</Text>
+            <RubyText text={`${t('result.funFact')} ${index + 1}`} style={styles.funFactLabel} enableRuby={currentLanguage === 'ja'} />
             <TouchableOpacity
               style={styles.funFactSpeakBtn}
               onPress={() => speakFunFact(fact, currentLanguage)}
@@ -135,7 +135,7 @@ export const SpecialChallengeResultScreen: React.FC<Props> = ({ navigation, rout
               <Text style={styles.speakIcon}>🔊</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.funFactText}>{fact}</Text>
+          <RubyText text={fact} style={styles.funFactText} enableRuby={currentLanguage === 'ja'} />
         </Animated.View>
       ))}
 
