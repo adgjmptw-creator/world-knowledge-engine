@@ -12,6 +12,7 @@
 
 import * as Speech from 'expo-speech';
 import { LanguageCode } from '../types';
+import { stripRubyForTTS } from '../utils/rubyText';
 
 /**
  * 言語コードからTTSエンジンのlocale識別子へのマッピング
@@ -58,7 +59,11 @@ export function speak(
     // 既存の読み上げがあれば停止
     Speech.stop();
 
-    Speech.speak(text, {
+    // 日本語のルビ括弧表記を除去して自然な読み上げにする
+    // 例: "富士山(ふじさん)" → "ふじさん" で読み上げ
+    const cleanText = stripRubyForTTS(text);
+
+    Speech.speak(cleanText, {
       language: LANGUAGE_TO_TTS_LOCALE[language],
       rate,
       pitch: 1.0,

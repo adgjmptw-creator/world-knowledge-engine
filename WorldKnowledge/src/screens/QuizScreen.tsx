@@ -23,6 +23,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
+import { RubyText } from '../components/RubyText';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { generateQuestion, processAnswer } from '../services/quizEngine';
 import { loadUserProgress, saveUserProgress } from '../services/storageService';
@@ -150,18 +151,18 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <Animated.View style={[styles.questionCard, { opacity: fadeAnim }]}>
         {/* 問題ヘッダー */}
-        <Text style={styles.questionLabel}>{t('quiz.question')}</Text>
+        <RubyText
+          text={t('quiz.question')}
+          style={styles.questionLabel}
+          enableRuby={currentLanguage === 'ja'}
+        />
 
-        {/* 国名表示: 現地語 + 英語 */}
-        <Text style={styles.countryNameLocal}>
-          {getLocalizedName(question.correctCountry)}
-        </Text>
-        {/* 日本語の場合はふりがなも表示 */}
-        {currentLanguage === 'ja' && question.correctCountry.furigana && (
-          <Text style={styles.furigana}>
-            {question.correctCountry.furigana}
-          </Text>
-        )}
+        {/* 国名表示: 現地語（日本語はルビ付き） + 英語 */}
+        <RubyText
+          text={getLocalizedName(question.correctCountry)}
+          style={styles.countryNameLocal}
+          enableRuby={currentLanguage === 'ja'}
+        />
         <Text style={styles.countryNameEn}>
           {question.correctCountry.nameEn}
         </Text>

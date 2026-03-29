@@ -13,13 +13,14 @@
  *   - 1分〜120分（無制限）
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  FlatList,
+  TextInput,
+  Alert,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ import {
   loadUserProgress,
   loadParentalSettings,
   saveParentalSettings,
+  resetAllData,
 } from '../services/storageService';
 import { UserProgress, ParentalSettings, RootStackParamList, CountryData } from '../types';
 import { getAllCountries } from '../data';
@@ -41,6 +43,14 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
   const { t } = useTranslation();
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [settings, setSettings] = useState<ParentalSettings | null>(null);
+  /** リセット確認モード */
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetAnswer, setResetAnswer] = useState('');
+  const [resetError, setResetError] = useState('');
+  /** リセット用の掛け算（2〜9） */
+  const [resetA, resetB] = useMemo(() => {
+    return [Math.floor(Math.random() * 8) + 2, Math.floor(Math.random() * 8) + 2];
+  }, [showResetConfirm]);
   const [timeLimit, setTimeLimit] = useState(0);
 
   const countries = getAllCountries();
@@ -87,6 +97,23 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
     };
     setSettings(newSettings);
     await saveParentalSettings(newSettings);
+  };
+
+  /** リセット実行ハンドラ */
+  const handleResetSubmit = async () => {
+    const answer = parseInt(resetAnswer, 10);
+    if (answer === resetA * resetB) {
+      await resetAllData();
+      setShowResetConfirm(false);
+      setResetAnswer('');
+      setResetError('');
+      Alert.alert(t('parent.resetComplete'));
+      // ホームに戻る
+      navigation.navigate('Home');
+    } else {
+      setResetError(t('parent.authError'));
+      setResetAnswer('');
+    }
   };
 
   /** 今日のプレイ時間（分） */
@@ -215,6 +242,59 @@ export const ParentalDashboardScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
       </View>
 
+      {/* === リセットセクション === */}
+      {!showResetConfirm ? (
+        <AnimatedButton
+          label={t('parent.resetData')}
+          onPress={() => {
+            // まず「本当にリセットしますか？」のアラート
+            Alert.alert(
+              t('parent.resetConfirmTitle'),
+              t('parent.resetConfirmMessage'),
+              [
+                { text: t('parent.back'), style: 'cancel' },
+                { text: 'OK', style: 'destructive', onPress: () => setShowResetConfirm(true) },
+              ]
+            );
+          }}
+          color={Colors.red}
+          textColor={Colors.textLight}
+          size="small"
+          style={styles.resetButton}
+        />
+      ) : (
+        <View style={styles.resetConfirmCard}>
+          <Text style={styles.resetQuestion}>
+            {t('parent.resetAuthQuestion', { a: resetA, b: resetB })}
+          </Text>
+          <TextInput
+            style={styles.resetInput}
+            value={resetAnswer}
+            onChangeText={(text) => { setResetAnswer(text); setResetError(''); }}
+            keyboardType="number-pad"
+            placeholder={t('parent.authPlaceholder')}
+            placeholderTextColor={Colors.disabled}
+            maxLength={3}
+            autoFocus
+          />
+          {resetError ? <Text style={styles.resetError}>{resetError}</Text> : null}
+          <AnimatedButton
+            label={t('parent.authSubmit')}
+            onPress={handleResetSubmit}
+            color={Colors.red}
+            disabled={!resetAnswer}
+            style={styles.resetSubmitButton}
+          />
+          <AnimatedButton
+            label={t('parent.back')}
+            onPress={() => { setShowResetConfirm(false); setResetAnswer(''); setResetError(''); }}
+            color={Colors.backgroundSecondary}
+            textColor={Colors.textSecondary}
+            size="small"
+          />
+        </View>
+      )}
+
       {/* 戻るボタン */}
       <AnimatedButton
         label={t('parent.back')}
@@ -337,5 +417,47 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginTop: Spacing.lg,
+  },
+  resetButton: {
+    marginTop: Spacing.xl,
+  },
+  resetConfirmCard: {
+    backgroundColor: Colors.cardBackground,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.lg,
+    marginTop: Spacing.xl,
+    borderWidth: 2,
+    borderColor: Colors.red,
+    alignItems: 'center',
+    ...Shadows.light,
+  },
+  resetQuestion: {
+    fontSize: FontSizes.subtitle,
+    fontWeight: 'bold',
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
+    textAlign: 'center',
+  },
+  resetInput: {
+    width: '60%',
+    borderWidth: 2,
+    borderColor: Colors.border,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    fontSize: FontSizes.title,
+    textAlign: 'center',
+    color: Colors.textPrimary,
+    backgroundColor: Colors.background,
+    marginBottom: Spacing.md,
+  },
+  resetError: {
+    fontSize: FontSizes.body,
+    color: Colors.red,
+    marginBottom: Spacing.md,
+    fontWeight: '500',
+  },
+  resetSubmitButton: {
+    width: '100%',
+    marginBottom: Spacing.sm,
   },
 });

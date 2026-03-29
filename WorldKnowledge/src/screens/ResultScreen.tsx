@@ -30,6 +30,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { FlagImage } from '../components/FlagImage';
+import { RubyText } from '../components/RubyText';
 import { ConfettiAnimation } from '../components/ConfettiAnimation';
 import { StarBurst } from '../components/StarBurst';
 import { AnimatedButton } from '../components/AnimatedButton';
@@ -170,12 +171,14 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text style={styles.headerEmoji}>
           {isCorrect ? '🎉' : '💪'}
         </Text>
-        <Text style={[
-          styles.headerText,
-          isCorrect ? styles.headerTextCorrect : styles.headerTextIncorrect,
-        ]}>
-          {feedbackMessage}
-        </Text>
+        <RubyText
+          text={feedbackMessage}
+          style={{
+            ...styles.headerText,
+            ...(isCorrect ? styles.headerTextCorrect : styles.headerTextIncorrect),
+          }}
+          enableRuby={currentLanguage === 'ja'}
+        />
       </Animated.View>
 
       {/* === 2. 国旗＋国名カード === */}
@@ -194,10 +197,11 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
           height={107}
         />
         <View style={styles.countryNameContainer}>
-          <Text style={styles.countryNameLocal}>{localName}</Text>
-          {currentLanguage === 'ja' && country.furigana && (
-            <Text style={styles.furigana}>{country.furigana}</Text>
-          )}
+          <RubyText
+            text={localName}
+            style={styles.countryNameLocal}
+            enableRuby={currentLanguage === 'ja'}
+          />
           <Text style={styles.countryNameEn}>{country.nameEn}</Text>
         </View>
         {/* 音声再生ボタン */}
@@ -247,7 +251,11 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
               <Text style={styles.speakIcon}>🔊</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.funFactText}>{fact}</Text>
+          <RubyText
+            text={fact}
+            style={styles.funFactText}
+            enableRuby={currentLanguage === 'ja'}
+          />
         </Animated.View>
       ))}
 

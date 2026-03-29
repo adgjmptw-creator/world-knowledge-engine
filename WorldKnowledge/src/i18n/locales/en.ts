@@ -65,6 +65,11 @@ export default {
     back: 'Back',
     totalAnswered: 'Total Answered',
     accuracy: 'Accuracy',
+    resetData: 'Reset All Learning Data',
+    resetConfirmTitle: 'Are you sure?',
+    resetConfirmMessage: 'All learning data will be deleted. This cannot be undone.',
+    resetAuthQuestion: 'To confirm, what is {{a}} × {{b}}?',
+    resetComplete: 'Data has been reset',
   },
   special: {
     title: 'Special Challenge!',
