@@ -26,9 +26,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnimatedButton } from '../components/AnimatedButton';
+import { RubyText } from '../components/RubyText';
 import { ConfettiAnimation } from '../components/ConfettiAnimation';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { loadUserProgress } from '../services/storageService';
+import { currentLanguage } from '../i18n';
 import { UserProgress, RootStackParamList } from '../types';
 import { getAllCountries } from '../data';
 
@@ -130,16 +132,14 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         >
           🌍
         </Animated.Text>
-        <Text style={styles.title}>{t('app.title')}</Text>
-        <Text style={styles.subtitle}>{t('app.subtitle')}</Text>
+        <RubyText text={t('app.title')} style={styles.title} enableRuby={currentLanguage === 'ja'} />
+        <RubyText text={t('app.subtitle')} style={styles.subtitle} enableRuby={currentLanguage === 'ja'} />
       </Animated.View>
 
       {/* === 学習進捗バー === */}
       {progress && (
         <View style={styles.progressContainer}>
-          <Text style={styles.progressText}>
-            {t('home.countriesMastered', { count: masteredCount })}
-          </Text>
+          <RubyText text={t('home.countriesMastered', { count: masteredCount })} style={styles.progressText} enableRuby={currentLanguage === 'ja'} />
           <View style={styles.progressBarBg}>
             <View
               style={[

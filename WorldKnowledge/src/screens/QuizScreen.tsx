@@ -199,7 +199,7 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* タップ促進テキスト */}
-      <Text style={styles.hintText}>{t('quiz.tapToSelect')}</Text>
+      <RubyText text={t('quiz.tapToSelect')} style={styles.hintText} enableRuby={currentLanguage === 'ja'} />
     </View>
   );
 };

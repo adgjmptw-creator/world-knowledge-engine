@@ -222,9 +222,7 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
           ]}
         >
           <Text style={styles.hintTitle}>💡</Text>
-          <Text style={styles.hintText}>
-            {t('result.correctFlag', { country: localName })}
-          </Text>
+          <RubyText text={t('result.correctFlag', { country: localName })} style={styles.hintText} enableRuby={currentLanguage === 'ja'} containerStyle={{ flex: 1 }} />
         </Animated.View>
       )}
 
@@ -241,9 +239,7 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
           ]}
         >
           <View style={styles.funFactHeader}>
-            <Text style={styles.funFactLabel}>
-              {t('result.funFact')} {index + 1}
-            </Text>
+            <RubyText text={`${t('result.funFact')} ${index + 1}`} style={styles.funFactLabel} enableRuby={currentLanguage === 'ja'} />
             <TouchableOpacity
               style={styles.funFactSpeakButton}
               onPress={() => handleSpeakFunFact(fact)}
