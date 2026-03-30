@@ -4,6 +4,12 @@
  * アプリ全体で一貫したデザインを保つための色・サイズ・フォント定義。
  * 5歳児が魅力的に感じる明るく温かい配色を採用。
  * 子供向け教育アプリ（Khan Academy Kids, Duolingo ABCなど）を参考にしている。
+ *
+ * デザイン方針:
+ * - 大きなタッチターゲット（最低48x48dp、理想は64x64dp）
+ * - 高コントラスト（テキストと背景の差をはっきり）
+ * - 丸みを帯びた角（安心感・やわらかさ）
+ * - 鮮やかだが目に優しい色（彩度高すぎず）
  */
 
 /** メインカラーパレット */
@@ -43,10 +49,10 @@ export const Colors = {
   backgroundSecondary: '#F0E6D8',
 
   // === テキスト色 ===
-  /** メインテキスト */
-  textPrimary: '#2D3436',
-  /** サブテキスト */
-  textSecondary: '#636E72',
+  /** メインテキスト（しっかり濃い色でコントラスト確保） */
+  textPrimary: '#1A1A2E',
+  /** サブテキスト（薄すぎない程度に） */
+  textSecondary: '#4A4A5A',
   /** 明るいテキスト（暗い背景上） */
   textLight: '#FFFFFF',
   /** リンク・アクションテキスト */
@@ -66,9 +72,9 @@ export const Colors = {
 /** フォントサイズ（5歳児が読みやすい大きめサイズ） */
 export const FontSizes = {
   /** 特大見出し（トップ画面タイトルなど） */
-  hero: 32,
+  hero: 34,
   /** 大見出し */
-  title: 26,
+  title: 28,
   /** 中見出し */
   subtitle: 22,
   /** 本文（通常テキスト） */
@@ -76,13 +82,13 @@ export const FontSizes = {
   /** 小さいテキスト（補足情報） */
   small: 14,
   /** 極小テキスト（著作権表記など） */
-  tiny: 11,
+  tiny: 10,
   /** クイズ選択肢テキスト */
   quizOption: 16,
   /** 豆知識テキスト */
-  funFact: 16,
+  funFact: 17,
   /** ボタンテキスト */
-  button: 20,
+  button: 22,
 } as const;
 
 /** スペーシング（余白） */
@@ -95,14 +101,14 @@ export const Spacing = {
   xxl: 48,
 } as const;
 
-/** 角丸の半径 */
+/** 角丸の半径（子供向けに丸みを大きく） */
 export const BorderRadius = {
   /** 小さい角丸（ボタン等） */
-  sm: 8,
+  sm: 12,
   /** 中くらいの角丸（カード等） */
-  md: 16,
-  /** 大きい角丸（モーダル等） */
-  lg: 24,
+  md: 20,
+  /** 大きい角丸（モーダル・メインボタン等） */
+  lg: 28,
   /** 完全な円 */
   full: 9999,
 } as const;
@@ -143,10 +149,10 @@ export const AnimationDuration = {
 
 /** 国旗画像のサイズ */
 export const FlagSize = {
-  /** クイズ選択肢での国旗サイズ */
-  quiz: { width: 120, height: 80 },
+  /** クイズ選択肢での国旗サイズ（大きめ＝タップしやすい） */
+  quiz: { width: 140, height: 93 },
   /** 結果カードでの国旗サイズ */
-  result: { width: 160, height: 107 },
+  result: { width: 180, height: 120 },
   /** 図鑑一覧での国旗サイズ */
   encyclopedia: { width: 60, height: 40 },
   /** 探検マップでの国旗サイズ */

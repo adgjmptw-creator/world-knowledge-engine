@@ -189,8 +189,8 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
             >
               <FlagImage
                 emoji={choice.flag.emoji}
-                width={SCREEN_WIDTH * 0.35}
-                height={(SCREEN_WIDTH * 0.35) * 0.67}
+                width={SCREEN_WIDTH * 0.38}
+                height={(SCREEN_WIDTH * 0.38) * 0.67}
                 showShadow={false}
               />
             </TouchableOpacity>
@@ -245,16 +245,17 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     alignItems: 'center',
     width: '100%',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
     ...Shadows.light,
   },
   questionLabel: {
     fontSize: FontSizes.body,
     color: Colors.textSecondary,
     marginBottom: Spacing.sm,
+    fontWeight: '600',
   },
   countryNameLocal: {
-    fontSize: FontSizes.title,
+    fontSize: FontSizes.title + 2,
     fontWeight: 'bold',
     color: Colors.primaryDark,
     textAlign: 'center',
@@ -276,9 +277,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   choiceWrapper: {
-    width: '48%',
-    aspectRatio: 1.3,
-    margin: '1%',
+    width: '47%',
+    aspectRatio: 1.2,
+    margin: '1.5%',
   },
   choiceButton: {
     flex: 1,
@@ -286,13 +287,14 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'transparent',
-    ...Shadows.light,
+    borderWidth: 4,
+    borderColor: Colors.border,
+    ...Shadows.medium,
   },
   choiceSelected: {
     borderColor: Colors.primary,
-    backgroundColor: Colors.primaryLight + '20',
+    backgroundColor: Colors.primaryLight + '30',
+    borderWidth: 4,
   },
   hintText: {
     fontSize: FontSizes.body,

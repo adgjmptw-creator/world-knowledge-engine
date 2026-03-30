@@ -285,8 +285,8 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: 'center',
-    paddingTop: Spacing.xxl,
-    paddingBottom: Spacing.xxl,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xl,
     paddingHorizontal: Spacing.lg,
   },
   // --- 結果ヘッダー ---
@@ -294,22 +294,22 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
     alignItems: 'center',
-    ...Shadows.light,
+    ...Shadows.medium,
   },
   headerCorrect: {
-    backgroundColor: Colors.green + '20',
-    borderWidth: 2,
+    backgroundColor: Colors.green + '25',
+    borderWidth: 3,
     borderColor: Colors.green,
   },
   headerIncorrect: {
-    backgroundColor: Colors.accent + '20',
-    borderWidth: 2,
+    backgroundColor: Colors.accent + '25',
+    borderWidth: 3,
     borderColor: Colors.accent,
   },
   headerEmoji: {
-    fontSize: 40,
+    fontSize: 48,
     marginBottom: Spacing.xs,
   },
   headerText: {
@@ -359,8 +359,8 @@ const styles = StyleSheet.create({
     right: Spacing.md,
     backgroundColor: Colors.primaryLight + '30',
     borderRadius: BorderRadius.full,
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -413,20 +413,20 @@ const styles = StyleSheet.create({
   funFactSpeakButton: {
     backgroundColor: Colors.primaryLight + '30',
     borderRadius: BorderRadius.full,
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },
   funFactText: {
     fontSize: FontSizes.funFact,
     color: Colors.textPrimary,
-    lineHeight: 24,
+    lineHeight: 28,
   },
   // --- アクションボタン ---
   actionButtons: {
     width: '100%',
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
     alignItems: 'center',
   },
   nextButton: {

@@ -245,11 +245,11 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xl,
   },
   globe: {
-    fontSize: 64,
-    marginBottom: Spacing.sm,
+    fontSize: 80,
+    marginBottom: Spacing.md,
   },
   title: {
     fontSize: FontSizes.hero,
@@ -260,33 +260,33 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: FontSizes.subtitle,
     color: Colors.accent,
-    fontWeight: '600',
-    marginTop: Spacing.xs,
+    fontWeight: '700',
+    marginTop: Spacing.sm,
   },
   progressContainer: {
     width: '100%',
     backgroundColor: Colors.cardBackground,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
+    padding: Spacing.lg,
     marginBottom: Spacing.lg,
     ...Shadows.light,
   },
   progressText: {
     fontSize: FontSizes.body,
-    fontWeight: '600',
+    fontWeight: '700',
     color: Colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   progressBarBg: {
-    height: 12,
+    height: 16,
     backgroundColor: Colors.backgroundSecondary,
-    borderRadius: 6,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
     backgroundColor: Colors.green,
-    borderRadius: 6,
+    borderRadius: 8,
   },
   progressDetail: {
     fontSize: FontSizes.small,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   gridButton: {
     width: '100%',
-    minHeight: 70,
+    minHeight: 80,
   },
   parentButton: {
     marginTop: Spacing.lg,
