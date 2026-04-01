@@ -17,7 +17,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableOpacity,
   Animated,
   Dimensions,
 } from 'react-native';
