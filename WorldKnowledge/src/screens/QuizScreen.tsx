@@ -17,6 +17,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  TouchableOpacity,
   Animated,
   Dimensions,
 } from 'react-native';
@@ -121,7 +122,7 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
 
     // 少し待ってから結果画面に遷移（タップアニメーションが見えるように）
     setTimeout(() => {
-      navigation.navigate('Result', { question, answer });
+      navigation.replace('Result', { question, answer });
     }, 300);
   };
 
@@ -149,6 +150,14 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* ホームに戻るボタン（左上） */}
+      <TouchableOpacity
+        style={styles.homeButton}
+        onPress={() => navigation.navigate('Home')}
+      >
+        <Text style={styles.homeButtonText}>🏠</Text>
+      </TouchableOpacity>
+
       <Animated.View style={[styles.questionCard, { opacity: fadeAnim }]}>
         {/* 問題ヘッダー */}
         <RubyText
@@ -211,6 +220,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
+  },
+  homeButton: {
+    position: 'absolute',
+    top: Spacing.xxl + 10,
+    left: Spacing.lg,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: BorderRadius.full,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Shadows.light,
+    zIndex: 10,
+  },
+  homeButtonText: {
+    fontSize: 24,
   },
   loadingContainer: {
     flex: 1,
