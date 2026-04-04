@@ -110,6 +110,11 @@ export const RubyText: React.FC<RubyTextProps> = ({
   const baseFontSize = (style as any)?.fontSize || FontSizes.body;
   const rubyFontSize = Math.max(Math.floor(baseFontSize * 0.45), 8);
 
+  // ルビセグメントが存在するかチェック（なければスペーサー不要）
+  const hasRubySegment = segments.some(s => s.type === 'ruby');
+  // スペーサーの高さ：ルビが存在する場合のみ確保、なければ0
+  const spacerHeight = hasRubySegment ? rubyFontSize + 1 : 0;
+
   return (
     <View style={[styles.container, containerStyle]}>
       {segments.map((segment, index) => {
@@ -139,14 +144,16 @@ export const RubyText: React.FC<RubyTextProps> = ({
           <React.Fragment key={index}>
             {chunks.map((chunk, ci) => (
               <View key={`${index}-${ci}`} style={styles.plainGroup}>
-                <Text
-                  style={[
-                    styles.ruby,
-                    { fontSize: rubyFontSize, lineHeight: rubyFontSize + 1, color: 'transparent' },
-                  ]}
-                >
-                  {' '}
-                </Text>
+                {spacerHeight > 0 && (
+                  <Text
+                    style={[
+                      styles.ruby,
+                      { fontSize: rubyFontSize, lineHeight: spacerHeight, color: 'transparent' },
+                    ]}
+                  >
+                    {' '}
+                  </Text>
+                )}
                 <Text style={[styles.base, style]}>{chunk}</Text>
               </View>
             ))}
