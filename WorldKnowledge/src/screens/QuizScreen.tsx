@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   hintText: {
     fontSize: FontSizes.body,
     color: Colors.textSecondary,
-    marginTop: Spacing.lg,
+    marginTop: Spacing.sm,
     fontWeight: '500',
   },
 });
