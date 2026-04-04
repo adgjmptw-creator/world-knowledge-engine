@@ -81,6 +81,15 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
     : 0;
 
   return (
+    <View style={styles.outerContainer}>
+      {/* ホームに戻るボタン（固定位置） */}
+      <TouchableOpacity
+        style={styles.homeButton}
+        onPress={() => navigation.navigate('Home')}
+      >
+        <Text style={styles.homeButtonText}>🏠</Text>
+      </TouchableOpacity>
+
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* ヘッダー */}
       <View style={styles.header}>
@@ -182,18 +191,39 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
         })}
       </View>
     </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
   content: {
-    paddingTop: Spacing.xl,
+    paddingTop: Spacing.xxl + 20,
     paddingBottom: Spacing.xxl,
     paddingHorizontal: Spacing.md,
+  },
+  homeButton: {
+    position: 'absolute',
+    top: Spacing.xxl + 10,
+    left: Spacing.md,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: BorderRadius.full,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Shadows.light,
+    zIndex: 10,
+  },
+  homeButtonText: {
+    fontSize: 24,
   },
   header: {
     alignItems: 'center',

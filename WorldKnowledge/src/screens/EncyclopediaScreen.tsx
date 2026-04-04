@@ -119,6 +119,14 @@ export const EncyclopediaScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* ホームに戻るボタン */}
+      <TouchableOpacity
+        style={styles.homeButton}
+        onPress={() => navigation.navigate('Home')}
+      >
+        <Text style={styles.homeButtonText}>🏠</Text>
+      </TouchableOpacity>
+
       {/* ヘッダー */}
       <View style={styles.header}>
         <RubyText text={`${t('encyclopedia.title')} 📖`} style={styles.title} enableRuby={currentLanguage === 'ja'} />
@@ -156,8 +164,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  homeButton: {
+    position: 'absolute',
+    top: Spacing.xxl + 10,
+    left: Spacing.lg,
+    backgroundColor: Colors.cardBackground,
+    borderRadius: BorderRadius.full,
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Shadows.light,
+    zIndex: 10,
+  },
+  homeButtonText: {
+    fontSize: 24,
+  },
   header: {
-    paddingTop: Spacing.xl,
+    paddingTop: Spacing.xxl + 20,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     flexDirection: 'row',
