@@ -36,6 +36,7 @@ import { StarBurst } from '../components/StarBurst';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { Colors, FontSizes, Spacing, BorderRadius, Shadows, AnimationDuration } from '../constants/theme';
 import { speakCountryName, speakFunFact, stopSpeaking } from '../services/ttsService';
+import { playCorrectSound, playIncorrectSound, playMasterSound } from '../services/soundService';
 import { currentLanguage } from '../i18n';
 import { RootStackParamList } from '../types';
 
@@ -106,6 +107,16 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
         useNativeDriver: true,
       }),
     ]).start();
+
+    // 効果音を再生
+    if (justMastered) {
+      // マスター達成 → 特別なファンファーレ（正解音の代わり）
+      playMasterSound();
+    } else if (isCorrect) {
+      playCorrectSound();
+    } else {
+      playIncorrectSound();
+    }
 
     // 正解の場合はお祝いアニメーションを表示
     if (isCorrect) {
