@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   header: {
-    paddingTop: Spacing.xxl + 20,
+    paddingTop: Spacing.xxl + 60,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
     flexDirection: 'row',
