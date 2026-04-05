@@ -38,6 +38,7 @@ export default {
     nextQuestion: '次(つぎ)へ進(すす)む！',
     quit: 'やめる',
     listenAgain: 'もう一度(いちど)聞(き)く',
+    mastered: '{{country}}をマスターしたよ！',
   },
   map: {
     title: '探検(たんけん)マップ',

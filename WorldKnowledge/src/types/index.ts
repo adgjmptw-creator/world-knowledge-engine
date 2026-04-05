@@ -249,6 +249,7 @@ export type RootStackParamList = {
   Result: {
     question: QuizQuestion;
     answer: QuizAnswer;
+    justMastered?: boolean;
   };
   ExplorationMap: undefined;
   Encyclopedia: undefined;

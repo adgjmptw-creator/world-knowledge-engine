@@ -72,12 +72,13 @@ export const EncyclopediaScreen: React.FC<Props> = ({ navigation }) => {
   /** 各行のレンダリング */
   const renderItem = ({ item }: { item: CountryData }) => {
     const isDiscovered = !!progress?.countryStates[item.id];
+    const isMastered = !!progress?.countryStates[item.id]?.isMastered;
     const localName = item.localizedNames[currentLanguage as keyof typeof item.localizedNames]
       || item.nameEn;
 
     return (
       <TouchableOpacity
-        style={[styles.row, !isDiscovered && styles.rowLocked]}
+        style={[styles.row, !isDiscovered && styles.rowLocked, isMastered && styles.rowMastered]}
         onPress={() => isDiscovered && handleCountryPress(item)}
         disabled={!isDiscovered}
         activeOpacity={0.6}
@@ -85,7 +86,10 @@ export const EncyclopediaScreen: React.FC<Props> = ({ navigation }) => {
         {/* 国旗 */}
         <View style={styles.flagContainer}>
           {isDiscovered ? (
-            <FlagImage emoji={item.flag.emoji} width={60} height={40} showShadow={false} />
+            <View>
+              <FlagImage emoji={item.flag.emoji} width={60} height={40} showShadow={false} />
+              {isMastered && <Text style={styles.masterBadge}>⭐</Text>}
+            </View>
           ) : (
             <View style={styles.lockedFlag}>
               <Text style={styles.lockedEmoji}>❓</Text>
@@ -233,6 +237,16 @@ const styles = StyleSheet.create({
   },
   rowLocked: {
     opacity: 0.5,
+  },
+  rowMastered: {
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.yellow,
+  },
+  masterBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    fontSize: 16,
   },
   flagContainer: {
     marginRight: Spacing.md,

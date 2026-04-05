@@ -153,6 +153,7 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
                 <View style={styles.expandedContainer}>
                   {regionCountries.map((country) => {
                     const isDiscovered = !!progress?.countryStates[country.id];
+                    const isMastered = !!progress?.countryStates[country.id]?.isMastered;
                     const isSpecialCleared = progress?.countryStates[country.id]?.specialChallengeCleared;
 
                     return (
@@ -173,7 +174,11 @@ export const ExplorationMapScreen: React.FC<Props> = ({ navigation }) => {
                               height={27}
                               showShadow={false}
                             />
-                            {/* スペシャルチャレンジクリアの王冠マーク */}
+                            {/* マスター済みの星マーク */}
+                            {isMastered && !isSpecialCleared && (
+                              <Text style={styles.masterMark}>⭐</Text>
+                            )}
+                            {/* スペシャルチャレンジクリアの王冠マーク（マスター+スペシャル） */}
                             {isSpecialCleared && (
                               <Text style={styles.crownMark}>👑</Text>
                             )}
@@ -305,6 +310,12 @@ const styles = StyleSheet.create({
     height: 27,
     textAlign: 'center',
     lineHeight: 27,
+  },
+  masterMark: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    fontSize: 12,
   },
   crownMark: {
     position: 'absolute',

@@ -46,7 +46,7 @@ type AnimationPattern = 'confetti' | 'stars';
 
 export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
   const { t } = useTranslation();
-  const { question, answer } = route.params;
+  const { question, answer, justMastered } = route.params;
   const country = question.correctCountry;
   const isCorrect = answer.isCorrect;
 
@@ -58,12 +58,13 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
     return messages[Math.floor(Math.random() * messages.length)];
   });
 
-  // アニメーションパターンを選択
+  // アニメーションパターンを選択（マスター達成時は必ず紙吹雪）
   const [animPattern] = useState<AnimationPattern>(
-    () => Math.random() > 0.5 ? 'confetti' : 'stars'
+    () => justMastered ? 'confetti' : (Math.random() > 0.5 ? 'confetti' : 'stars')
   );
 
   const [showAnimation, setShowAnimation] = useState(false);
+  const masterScale = useRef(new Animated.Value(0)).current;
   const [hasAutoPlayed, setHasAutoPlayed] = useState(false);
 
   // フェードインアニメーション
@@ -109,9 +110,20 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
     // 正解の場合はお祝いアニメーションを表示
     if (isCorrect) {
       setTimeout(() => setShowAnimation(true), 200);
-      setTimeout(() => setShowAnimation(false), 2500);
+      setTimeout(() => setShowAnimation(false), justMastered ? 4000 : 2500);
     }
-  }, [fadeAnim, slideAnim, headerScale, isCorrect]);
+
+    // マスター達成バナーのポップインアニメーション（少し遅れて登場）
+    if (justMastered) {
+      Animated.spring(masterScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 6,
+        bounciness: 15,
+        delay: 600,
+      }).start();
+    }
+  }, [fadeAnim, slideAnim, headerScale, isCorrect, justMastered, masterScale]);
 
   // 300ms後にTTS自動再生（1回のみ）
   useEffect(() => {
@@ -180,6 +192,23 @@ export const ResultScreen: React.FC<Props> = ({ navigation, route }) => {
           enableRuby={currentLanguage === 'ja'}
         />
       </Animated.View>
+
+      {/* === マスター達成バナー === */}
+      {justMastered && (
+        <Animated.View
+          style={[
+            styles.masterBanner,
+            { transform: [{ scale: masterScale }] },
+          ]}
+        >
+          <Text style={styles.masterEmoji}>⭐🏆⭐</Text>
+          <RubyText
+            text={t('result.mastered', { country: localName })}
+            style={styles.masterText}
+            enableRuby={currentLanguage === 'ja'}
+          />
+        </Animated.View>
+      )}
 
       {/* === 2. 国旗＋国名カード === */}
       <Animated.View
@@ -288,6 +317,28 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xl,
     paddingBottom: Spacing.xl,
     paddingHorizontal: Spacing.lg,
+  },
+  // --- マスター達成バナー ---
+  masterBanner: {
+    backgroundColor: Colors.yellow + '30',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 3,
+    borderColor: Colors.yellow,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+    alignItems: 'center',
+    ...Shadows.medium,
+  },
+  masterEmoji: {
+    fontSize: 36,
+    marginBottom: Spacing.xs,
+  },
+  masterText: {
+    fontSize: FontSizes.subtitle,
+    fontWeight: 'bold',
+    color: Colors.primaryDark,
+    textAlign: 'center',
   },
   // --- 結果ヘッダー ---
   headerContainer: {

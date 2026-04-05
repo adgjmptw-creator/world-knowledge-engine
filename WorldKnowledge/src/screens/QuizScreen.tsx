@@ -119,9 +119,14 @@ export const QuizScreen: React.FC<Props> = ({ navigation }) => {
     // 進捗を保存
     await saveUserProgress(updatedProgress);
 
+    // マスター達成判定: 今回の回答でマスターになったか
+    const prevState = progress.countryStates[question.correctCountry.id];
+    const newState = updatedProgress.countryStates[question.correctCountry.id];
+    const justMastered = !prevState?.isMastered && !!newState?.isMastered;
+
     // 少し待ってから結果画面に遷移（タップアニメーションが見えるように）
     setTimeout(() => {
-      navigation.replace('Result', { question, answer });
+      navigation.replace('Result', { question, answer, justMastered });
     }, 300);
   };
 

@@ -36,6 +36,7 @@ export default {
     nextQuestion: 'Next!',
     quit: 'Quit',
     listenAgain: 'Listen again',
+    mastered: 'You mastered {{country}}!',
   },
   map: {
     title: 'Exploration Map',
