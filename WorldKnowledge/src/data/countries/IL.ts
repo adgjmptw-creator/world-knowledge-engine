@@ -7,8 +7,8 @@ export const IL = country(
   'IL', 'Israel',
   ['Israel', '以色列', '以色列', 'इज़राइल', 'Israel', 'Israel', 'Israel', 'イスラエル', 'إسرائيل', 'Israël', 'Israel', '이스라엘', 'İsrail', 'Израиль'],
   'いすらえる', '🇮🇱', 'west_asia', 42,
-  'Jerusalem',
-  ['Jerusalem', '耶路撒冷', '耶路撒冷', 'येरूशलम', 'Jerusalén', 'Jerusalém', 'Yerusalem', 'エルサレム', 'القدس', 'Jérusalem', 'Jerusalem', '예루살렘', 'Kudüs', 'Иерусалим'],
+  'Tel Aviv',
+  ['Tel Aviv', '特拉维夫', '特拉維夫', 'तेल अवीव', 'Tel Aviv', 'Tel Aviv', 'Tel Aviv', 'テルアビブ', 'تل أبيب', 'Tel Aviv', 'Tel Aviv', '텔아비브', 'Tel Aviv', 'Тель-Авив'],
   {
     en: [
       'The Dead Sea in Israel is the lowest place on land in the whole world, and it is so salty that you can float on top of it easily.',
