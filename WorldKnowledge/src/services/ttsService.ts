@@ -2,7 +2,10 @@
  * World Knowledge Engine — TTSサービス
  *
  * デバイス内蔵のTTSエンジンを使用して、国名や豆知識を読み上げる。
- * expo-speechを使用し、オフライン環境でも動作する。
+ * - Native (iOS/Android): expo-speech を使用
+ * - Web: Web Speech API (window.speechSynthesis) を使用
+ *
+ * いずれもオフライン環境で動作する（ブラウザ・OSに組み込みの音声エンジン）。
  *
  * 仕様:
  * - 結果カード表示300ms後に自動再生（現地語→英語の順）
@@ -10,6 +13,7 @@
  * - 自動再生は1回のみ
  */
 
+import { Platform } from 'react-native';
 import * as Speech from 'expo-speech';
 import { LanguageCode } from '../types';
 import { stripRubyForTTS } from '../utils/rubyText';
@@ -35,12 +39,51 @@ const LANGUAGE_TO_TTS_LOCALE: Record<LanguageCode, string> = {
   ru: 'ru-RU',
 };
 
+/** Web環境かどうか */
+const isWeb = Platform.OS === 'web';
+
+/**
+ * Web Speech APIが利用可能かチェック
+ */
+function hasWebSpeech(): boolean {
+  return isWeb && typeof window !== 'undefined' && 'speechSynthesis' in window;
+}
+
 /**
  * 現在の読み上げを停止する
  * 新しい読み上げを開始する前に呼び出す
  */
 export function stopSpeaking(): void {
-  Speech.stop();
+  if (hasWebSpeech()) {
+    window.speechSynthesis.cancel();
+  } else {
+    Speech.stop();
+  }
+}
+
+/**
+ * Web Speech APIで読み上げる
+ */
+function speakWeb(text: string, language: LanguageCode, rate: number): Promise<void> {
+  return new Promise((resolve) => {
+    if (!hasWebSpeech()) {
+      resolve();
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = LANGUAGE_TO_TTS_LOCALE[language];
+      utterance.rate = rate;
+      utterance.pitch = 1.0;
+      utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn('Web TTS error:', e);
+      resolve();
+    }
+  });
 }
 
 /**
@@ -55,14 +98,18 @@ export function speak(
   language: LanguageCode,
   rate: number = 0.85
 ): Promise<void> {
+  // 日本語のルビ括弧表記を除去して自然な読み上げにする
+  // 例: "富士山(ふじさん)" → "ふじさん" で読み上げ
+  const cleanText = stripRubyForTTS(text);
+
+  // Web環境ではWeb Speech APIを使用
+  if (hasWebSpeech()) {
+    return speakWeb(cleanText, language, rate);
+  }
+
+  // Native環境ではexpo-speechを使用
   return new Promise((resolve, reject) => {
-    // 既存の読み上げがあれば停止
     Speech.stop();
-
-    // 日本語のルビ括弧表記を除去して自然な読み上げにする
-    // 例: "富士山(ふじさん)" → "ふじさん" で読み上げ
-    const cleanText = stripRubyForTTS(text);
-
     Speech.speak(cleanText, {
       language: LANGUAGE_TO_TTS_LOCALE[language],
       rate,
@@ -119,6 +166,9 @@ export async function speakFunFact(
  * @returns 利用可能な場合true
  */
 export async function isTTSAvailable(): Promise<boolean> {
+  if (hasWebSpeech()) {
+    return true;
+  }
   try {
     const voices = await Speech.getAvailableVoicesAsync();
     return voices.length > 0;
@@ -131,5 +181,8 @@ export async function isTTSAvailable(): Promise<boolean> {
  * 現在読み上げ中かどうかチェックする
  */
 export async function isSpeaking(): Promise<boolean> {
+  if (hasWebSpeech()) {
+    return window.speechSynthesis.speaking;
+  }
   return Speech.isSpeakingAsync();
 }

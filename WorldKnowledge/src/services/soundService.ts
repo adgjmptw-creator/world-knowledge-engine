@@ -2,20 +2,88 @@
  * World Knowledge Engine — サウンドサービス
  *
  * 正解・不正解・マスター達成時の効果音を再生する。
- * 音はプログラムで生成したWAVデータを使用し、外部ファイル不要。
- * オフライン環境でも動作する。
+ * - Native (iOS/Android): expo-av + 動的生成WAV + expo-haptics
+ * - Web: Web Audio API でサイン波を直接合成（外部ファイル不要）
+ *
+ * いずれもオフライン環境で動作する。
  *
  * 設計思想（5歳児向け）:
  * - 正解: 明るく短い上昇チャイム → 「やった！」という達成感
  * - 不正解: 柔らかく短い低音 → 怖くない、落ち込ませない
  * - マスター: 華やかなファンファーレ → 特別感のある大きな達成
- *
- * expo-av の Audio.Sound を使用。
- * expo-haptics で触覚フィードバックも併用。
  */
 
+import { Platform } from 'react-native';
 import { Audio } from 'expo-av';
 import * as Haptics from 'expo-haptics';
+
+/** Web環境かどうか */
+const isWeb = Platform.OS === 'web';
+
+// ============================================================
+// Web Audio API 用の実装
+// ============================================================
+
+/** Web Audio API のコンテキスト（遅延初期化、ユーザー操作後に作成） */
+let webAudioCtx: AudioContext | null = null;
+
+/**
+ * Web AudioContext を取得する（遅延初期化）
+ * ブラウザのautoplay制限のため、ユーザー操作後に初めて作成される
+ */
+function getWebAudioCtx(): AudioContext | null {
+  if (!isWeb || typeof window === 'undefined') return null;
+  if (!webAudioCtx) {
+    try {
+      const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return null;
+      webAudioCtx = new AudioContextClass();
+    } catch {
+      return null;
+    }
+  }
+  return webAudioCtx;
+}
+
+/**
+ * Web Audio APIで複数のトーンを順番に再生する
+ * @param notes 各音符 [周波数Hz, 長さ秒, 音量0-1]
+ */
+function playWebTones(notes: Array<[number, number, number]>): void {
+  const ctx = getWebAudioCtx();
+  if (!ctx) return;
+
+  // ブラウザがサスペンド状態なら再開
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
+
+  let startTime = ctx.currentTime;
+  for (const [frequency, duration, volume] of notes) {
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.value = frequency;
+
+    // エンベロープ: 急速立ち上がり + 指数減衰（自然な音）
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
+
+    startTime += duration;
+  }
+}
+
+// ============================================================
+// Native (expo-av) 用の WAV 生成 — Web では使わない
+// ============================================================
 
 /**
  * WAVファイルのヘッダーを生成する
@@ -23,48 +91,28 @@ import * as Haptics from 'expo-haptics';
 function createWavHeader(dataLength: number, sampleRate: number): ArrayBuffer {
   const buffer = new ArrayBuffer(44);
   const view = new DataView(buffer);
-
-  // "RIFF"
   view.setUint8(0, 0x52); view.setUint8(1, 0x49);
   view.setUint8(2, 0x46); view.setUint8(3, 0x46);
-  // ファイルサイズ - 8
   view.setUint32(4, 36 + dataLength, true);
-  // "WAVE"
   view.setUint8(8, 0x57); view.setUint8(9, 0x41);
   view.setUint8(10, 0x56); view.setUint8(11, 0x45);
-  // "fmt "
   view.setUint8(12, 0x66); view.setUint8(13, 0x6D);
   view.setUint8(14, 0x74); view.setUint8(15, 0x20);
-  // fmtチャンクサイズ
   view.setUint32(16, 16, true);
-  // PCMフォーマット
   view.setUint16(20, 1, true);
-  // モノラル
   view.setUint16(22, 1, true);
-  // サンプルレート
   view.setUint32(24, sampleRate, true);
-  // バイトレート
   view.setUint32(28, sampleRate * 2, true);
-  // ブロックアライン
   view.setUint16(32, 2, true);
-  // ビット深度
   view.setUint16(34, 16, true);
-  // "data"
   view.setUint8(36, 0x64); view.setUint8(37, 0x61);
   view.setUint8(38, 0x74); view.setUint8(39, 0x61);
-  // データサイズ
   view.setUint32(40, dataLength, true);
-
   return buffer;
 }
 
 /**
  * サイン波のPCMデータを生成する
- * @param frequency 周波数（Hz）
- * @param duration 長さ（秒）
- * @param volume 音量（0-1）
- * @param sampleRate サンプルレート
- * @param fadeOut フェードアウトするかどうか
  */
 function generateTone(
   frequency: number,
@@ -75,20 +123,15 @@ function generateTone(
 ): Int16Array {
   const numSamples = Math.floor(sampleRate * duration);
   const samples = new Int16Array(numSamples);
-
   for (let i = 0; i < numSamples; i++) {
     const t = i / sampleRate;
-    // サイン波
     let sample = Math.sin(2 * Math.PI * frequency * t);
-    // フェードアウト（自然な音の減衰）
     if (fadeOut) {
       const envelope = Math.exp(-3 * t / duration);
       sample *= envelope;
     }
-    // 音量調整して16bitに変換
     samples[i] = Math.floor(sample * volume * 32767);
   }
-
   return samples;
 }
 
@@ -96,7 +139,6 @@ function generateTone(
  * 複数の音をつなげてWAV形式のBase64文字列にする
  */
 function createWavBase64(tones: Int16Array[], sampleRate: number = 22050): string {
-  // 全トーンを結合
   const totalLength = tones.reduce((sum, t) => sum + t.length, 0);
   const combined = new Int16Array(totalLength);
   let offset = 0;
@@ -104,19 +146,13 @@ function createWavBase64(tones: Int16Array[], sampleRate: number = 22050): strin
     combined.set(tone, offset);
     offset += tone.length;
   }
-
-  // WAVヘッダー + PCMデータ
   const dataLength = combined.length * 2;
   const header = createWavHeader(dataLength, sampleRate);
   const headerBytes = new Uint8Array(header);
   const dataBytes = new Uint8Array(combined.buffer);
-
-  // 結合してBase64に変換
   const wav = new Uint8Array(headerBytes.length + dataBytes.length);
   wav.set(headerBytes);
   wav.set(dataBytes, headerBytes.length);
-
-  // Base64エンコード
   let binary = '';
   for (let i = 0; i < wav.length; i++) {
     binary += String.fromCharCode(wav[i]);
@@ -124,60 +160,46 @@ function createWavBase64(tones: Int16Array[], sampleRate: number = 22050): strin
   return btoa(binary);
 }
 
-// === 効果音の生成 ===
+// === Native用の効果音WAV事前生成（Web環境では生成しない） ===
 
 const SAMPLE_RATE = 22050;
 
-/**
- * 正解の音: 明るい上昇2音チャイム（C5→G5）
- * 短く（0.3秒）、明るく、子供が喜ぶ音
- */
-const correctSoundBase64 = createWavBase64([
-  generateTone(523, 0.12, 0.6, SAMPLE_RATE),  // C5（ド）
-  generateTone(784, 0.2, 0.5, SAMPLE_RATE),   // G5（ソ）
+const correctSoundBase64 = isWeb ? '' : createWavBase64([
+  generateTone(523, 0.12, 0.6, SAMPLE_RATE),
+  generateTone(784, 0.2, 0.5, SAMPLE_RATE),
 ], SAMPLE_RATE);
 
-/**
- * 不正解の音: 柔らかい低音（C4）
- * 短く（0.2秒）、柔らかく、怖くない
- */
-const incorrectSoundBase64 = createWavBase64([
-  generateTone(262, 0.2, 0.3, SAMPLE_RATE),   // C4（ド）低く柔らかい
+const incorrectSoundBase64 = isWeb ? '' : createWavBase64([
+  generateTone(262, 0.2, 0.3, SAMPLE_RATE),
 ], SAMPLE_RATE);
 
-/**
- * マスター達成の音: 華やかな上昇3音ファンファーレ（C5→E5→G5↑）
- * 少し長め（0.5秒）、特別感のある音
- */
-const masterSoundBase64 = createWavBase64([
-  generateTone(523, 0.12, 0.6, SAMPLE_RATE),  // C5（ド）
-  generateTone(659, 0.12, 0.6, SAMPLE_RATE),  // E5（ミ）
-  generateTone(1047, 0.3, 0.5, SAMPLE_RATE),  // C6（高いド）
+const masterSoundBase64 = isWeb ? '' : createWavBase64([
+  generateTone(523, 0.12, 0.6, SAMPLE_RATE),
+  generateTone(659, 0.12, 0.6, SAMPLE_RATE),
+  generateTone(1047, 0.3, 0.5, SAMPLE_RATE),
 ], SAMPLE_RATE);
 
-// === 再生関数 ===
-
-/** サウンドオブジェクトのキャッシュ */
-let correctSound: Audio.Sound | null = null;
-let incorrectSound: Audio.Sound | null = null;
-let masterSound: Audio.Sound | null = null;
+// ============================================================
+// 共通の再生関数
+// ============================================================
 
 /**
- * オーディオモードを初期化する（他の音を中断しない設定）
+ * Native: オーディオモードを初期化する
  */
 async function initAudio(): Promise<void> {
+  if (isWeb) return;
   try {
     await Audio.setAudioModeAsync({
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
     });
   } catch (e) {
-    // 初期化失敗しても続行（音が出ないだけ）
+    // 初期化失敗しても続行
   }
 }
 
 /**
- * Base64のWAVデータからサウンドを再生する
+ * Native: Base64のWAVデータからサウンドを再生する
  */
 async function playBase64Sound(base64: string): Promise<void> {
   try {
@@ -185,27 +207,48 @@ async function playBase64Sound(base64: string): Promise<void> {
       { uri: `data:audio/wav;base64,${base64}` },
       { shouldPlay: true }
     );
-    // 再生完了後にアンロード
     sound.setOnPlaybackStatusUpdate((status) => {
       if ('didJustFinish' in status && status.didJustFinish) {
         sound.unloadAsync();
       }
     });
   } catch (e) {
-    // 再生失敗しても無視（子供がエラーで困らないように）
     console.warn('Sound playback failed:', e);
   }
 }
+
+/**
+ * 触覚フィードバック（Webでは何もしない）
+ */
+function hapticSuccess(): void {
+  if (isWeb) return;
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+}
+
+function hapticLight(): void {
+  if (isWeb) return;
+  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+}
+
+// ============================================================
+// 公開API
+// ============================================================
 
 /**
  * 正解の効果音を再生する
  * 明るい上昇チャイム + 軽い触覚フィードバック
  */
 export async function playCorrectSound(): Promise<void> {
-  await initAudio();
-  // 触覚フィードバック（軽い成功感）
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  await playBase64Sound(correctSoundBase64);
+  hapticSuccess();
+  if (isWeb) {
+    playWebTones([
+      [523, 0.12, 0.4],  // C5（ド）
+      [784, 0.2, 0.35],  // G5（ソ）
+    ]);
+  } else {
+    await initAudio();
+    await playBase64Sound(correctSoundBase64);
+  }
 }
 
 /**
@@ -213,10 +256,15 @@ export async function playCorrectSound(): Promise<void> {
  * 柔らかい低音（怖くない、落ち込ませない）
  */
 export async function playIncorrectSound(): Promise<void> {
-  await initAudio();
-  // 触覚フィードバック（軽い振動のみ）
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  await playBase64Sound(incorrectSoundBase64);
+  hapticLight();
+  if (isWeb) {
+    playWebTones([
+      [262, 0.2, 0.25],  // C4（ド）柔らかく
+    ]);
+  } else {
+    await initAudio();
+    await playBase64Sound(incorrectSoundBase64);
+  }
 }
 
 /**
@@ -224,12 +272,16 @@ export async function playIncorrectSound(): Promise<void> {
  * 華やかなファンファーレ + 強い触覚フィードバック
  */
 export async function playMasterSound(): Promise<void> {
-  await initAudio();
-  // 触覚フィードバック（大きな成功感）
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  // 少し遅らせてもう一度振動（特別感）
-  setTimeout(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, 300);
-  await playBase64Sound(masterSoundBase64);
+  hapticSuccess();
+  setTimeout(() => hapticSuccess(), 300);
+  if (isWeb) {
+    playWebTones([
+      [523, 0.12, 0.4],   // C5（ド）
+      [659, 0.12, 0.4],   // E5（ミ）
+      [1047, 0.3, 0.35],  // C6（高いド）
+    ]);
+  } else {
+    await initAudio();
+    await playBase64Sound(masterSoundBase64);
+  }
 }

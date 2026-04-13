@@ -1,0 +1,76 @@
+# GitHub Pages へのデプロイワークフロー
+#
+# main または claude/add-app-specification-80SiM ブランチに push があると、
+# Expo Web ビルドを実行して GitHub Pages に自動デプロイする。
+#
+# デプロイ先 URL:
+#   https://<owner>.github.io/world-knowledge-engine/
+name: Deploy Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - claude/add-app-specification-80SiM
+  workflow_dispatch:  # 手動実行も可能
+
+# GitHub Pages へのデプロイに必要な権限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行制御: 1つのデプロイのみ実行
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js セットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: WorldKnowledge/package-lock.json
+
+      - name: 依存関係のインストール
+        working-directory: WorldKnowledge
+        run: npm ci --legacy-peer-deps
+
+      - name: Web ビルド
+        working-directory: WorldKnowledge
+        run: npx expo export --platform web
+
+      - name: SPA フォールバック用の 404.html を生成
+        # GitHub Pages では 404 時に 404.html が返される。
+        # SPA 用に index.html と同じ内容を 404.html にコピーすることで、
+        # 直接 URL アクセスでも index.html が読み込まれる。
+        working-directory: WorldKnowledge
+        run: cp dist/index.html dist/404.html
+
+      - name: .nojekyll を作成
+        # GitHub Pages の Jekyll 処理を無効化（_expo フォルダが除外されるのを防ぐ）
+        working-directory: WorldKnowledge
+        run: touch dist/.nojekyll
+
+      - name: Pages 用のアーティファクトをアップロード
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: WorldKnowledge/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: GitHub Pages にデプロイ
+        id: deployment
+        uses: actions/deploy-pages@v4

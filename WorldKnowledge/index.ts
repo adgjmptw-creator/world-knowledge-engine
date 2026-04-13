@@ -1,3 +1,7 @@
+// Web環境向けのMetroランタイム（Web ビルド時に必要）
+// Native環境では何もしない安全なインポート
+import '@expo/metro-runtime';
+
 import { registerRootComponent } from 'expo';
 
 import App from './App';
