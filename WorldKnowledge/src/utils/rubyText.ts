@@ -100,6 +100,18 @@ export function stripRubyForTTS(text: string): string {
 }
 
 /**
+ * プレーンテキスト表示用にルビ括弧表記を除去する
+ * 漢字(かな) → 漢字 に変換（漢字を残してふりがなを削除）
+ * ブラウザタイトル・スクリーンリーダー用の純粋な文字列が必要な場合に使用
+ *
+ * 例: "世界(せかい)の知識(ちしき)エンジン"
+ * → "世界の知識エンジン"
+ */
+export function stripRubyForDisplay(text: string): string {
+  return text.replace(new RegExp(`(${KANJI_CHAR}+)\\([^\\)]+\\)`, 'g'), '$1');
+}
+
+/**
  * テキストにルビ表記が含まれるかチェック
  */
 export function hasRuby(text: string): boolean {

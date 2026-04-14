@@ -23,6 +23,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // i18nの初期化（インポートするだけで初期化される）
 import './src/i18n';
+import i18n from './src/i18n';
 
 import {
   HomeScreen,
@@ -37,6 +38,20 @@ import {
 } from './src/screens';
 import { RootStackParamList } from './src/types';
 import { Colors } from './src/constants/theme';
+import { stripRubyForDisplay } from './src/utils/rubyText';
+
+/**
+ * ブラウザのタイトルバーに表示するアプリ名
+ * ルビ括弧を除去した純粋な文字列を生成する。
+ * 例: "世界(せかい)の知識(ちしき)エンジン" → "世界の知識エンジン"
+ */
+function getDocumentTitle(): string {
+  try {
+    return stripRubyForDisplay(i18n.t('app.title'));
+  } catch {
+    return 'World Knowledge Engine';
+  }
+}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,7 +75,13 @@ const screenOptions = {
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      // ブラウザのタブタイトル（ブックマーク名）を画面名ではなく
+      // ローカライズされたアプリ名にする。Web環境でのみ有効。
+      documentTitle={{
+        formatter: () => getDocumentTitle(),
+      }}
+    >
       <StatusBar style="light" />
       <Stack.Navigator
         initialRouteName="Home"
