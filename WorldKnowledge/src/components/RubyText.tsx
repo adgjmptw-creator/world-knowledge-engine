@@ -4,13 +4,10 @@
  * 漢字の上にふりがなを表示する伝統的な日本語ルビ表記。
  *
  * 設計:
+ * - ルビグループ（漢字+ふりがな）はView内に縦配置
+ * - プレーンテキストはそのまま<Text>で出力（OS標準の改行ルールに委ねる）
  * - flexWrap: 'wrap' + alignItems: 'flex-end' でベースラインを揃える
- * - ルビグループだけが上部にルビテキストを持ち、高さが大きくなる
- * - プレーンテキストは高さを持たず、ベースラインで揃う
- *
- * 禁則処理:
- * - 行頭禁則: 句読点「。」「、」感嘆符「！」「？」閉じ括弧等は行頭に来ない
- * - 行末禁則: 開き括弧等は行末に来ない
+ * - 禁則処理はOS/ブラウザのテキストレンダリングに委任（プレーンテキスト部分）
  */
 
 import React from 'react';
@@ -26,51 +23,6 @@ interface RubyTextProps {
   enableRuby?: boolean;
 }
 
-/**
- * 行頭禁則文字（行頭に来てはいけない文字）
- */
-const LINE_START_PROHIBITED = new Set([
-  '。', '、', '！', '？', '・',
-  '）', '】', '》', '』', '」', '｝', '〕', '〉',
-  ')', ']', '}', '>', '!', '?', '.', ',', ':', ';',
-  'ー', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ', 'っ', 'ゃ', 'ゅ', 'ょ',
-  'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ッ', 'ャ', 'ュ', 'ョ',
-  '々', '〻', '…', '‥', '～',
-]);
-
-/**
- * 行末禁則文字（行末に来てはいけない文字）
- */
-const LINE_END_PROHIBITED = new Set([
-  '（', '【', '《', '『', '「', '｛', '〔', '〈',
-  '(', '[', '{', '<',
-]);
-
-/**
- * 禁則処理を考慮してチャンク分割
- */
-function splitWithKinsoku(text: string): string[] {
-  const chars = Array.from(text);
-  if (chars.length === 0) return [];
-
-  const chunks: string[] = [];
-  let current = chars[0];
-
-  for (let i = 1; i < chars.length; i++) {
-    const char = chars[i];
-    if (LINE_START_PROHIBITED.has(char)) {
-      current += char;
-    } else if (LINE_END_PROHIBITED.has(current[current.length - 1])) {
-      current += char;
-    } else {
-      chunks.push(current);
-      current = char;
-    }
-  }
-  if (current) chunks.push(current);
-  return chunks;
-}
-
 export const RubyText: React.FC<RubyTextProps> = ({
   text,
   style,
@@ -78,6 +30,7 @@ export const RubyText: React.FC<RubyTextProps> = ({
   containerStyle,
   enableRuby = false,
 }) => {
+  // ルビ不要 or ルビ表記が含まれない場合はプレーンテキスト
   if (!enableRuby || !hasRuby(text)) {
     return <Text style={style}>{text}</Text>;
   }
@@ -109,16 +62,13 @@ export const RubyText: React.FC<RubyTextProps> = ({
             </View>
           );
         }
-        // プレーンテキスト: スペーサーなし、ベースラインで揃う
-        const chunks = splitWithKinsoku(segment.text);
+        // プレーンテキスト: 分割せずそのまま出力
+        // OS/ブラウザ標準の改行・禁則処理に委ねることで
+        // 「ジャ」「ション」等の途中で不自然に切れることを防ぐ
         return (
-          <React.Fragment key={index}>
-            {chunks.map((chunk, ci) => (
-              <Text key={`${index}-${ci}`} style={[styles.base, style]}>
-                {chunk}
-              </Text>
-            ))}
-          </React.Fragment>
+          <Text key={index} style={[styles.base, style]}>
+            {segment.text}
+          </Text>
         );
       })}
     </View>
