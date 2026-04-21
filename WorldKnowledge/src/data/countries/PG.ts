@@ -21,7 +21,7 @@ export const PG = country(
     'pt-BR': ['Papua Nova Guiné tem mais de 800 línguas diferentes — mais do que qualquer outro país do mundo!', 'Ela tem belos recifes de coral no oceano e densas florestas tropicais cheias de animais incríveis.'],
     id: ['Papua Nugini memiliki lebih dari 800 bahasa yang berbeda — lebih banyak dari negara mana pun di dunia!', 'Di sini ada terumbu karang yang indah di lautan dan hutan hujan lebat yang penuh hewan menakjubkan.'],
     ja: [
-      'パプアニューギニアには800(はっぴゃく)以上(いじょう)もの言葉(ことば)があり、世界(せかい)で一番(いちばん)たくさんの言葉(ことば)がある国(くに)です！',
+      'パプアニューギニアには800以上(いじょう)もの言葉(ことば)があり、世界(せかい)で一番(いちばん)たくさんの言葉(ことば)がある国(くに)です！',
       '美(うつく)しいサンゴ礁(しょう)と、不思議(ふしぎ)な動物(どうぶつ)がたくさん住(す)む深(ふか)い熱帯雨林(ねったいうりん)があります。',
     ],
     ar: ['تضم بابوا غينيا الجديدة أكثر من 800 لغة مختلفة، أكثر من أي بلد آخر في العالم!', 'فيها شعاب مرجانية جميلة وغابات مطيرة كثيفة مليئة بالحيوانات الرائعة.'],

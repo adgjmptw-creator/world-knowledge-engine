@@ -21,7 +21,7 @@ export const PH = country(
     'pt-BR': ['As Filipinas têm mais de 7.000 ilhas — isso é muita ilha!', 'A Águia Filipina é uma das maiores e mais poderosas águias do mundo.'],
     id: ['Filipina memiliki lebih dari 7.000 pulau — itu sangat banyak pulau!', 'Elang Filipina adalah salah satu elang terbesar dan terkuat di dunia.'],
     ja: [
-      'フィリピンには7000(ななせん)以上(いじょう)の島(しま)があります。とってもたくさんの島(しま)ですね！',
+      'フィリピンには7,000以上(いじょう)の島(しま)があります。とってもたくさんの島(しま)ですね！',
       'フィリピンワシは、世界(せかい)で一番(いちばん)大(おお)きくて力強(ちからづよ)いワシのひとつです。',
     ],
     ar: ['الفلبين لديها أكثر من 7000 جزيرة — هذا كثير جداً من الجزر!', 'النسر الفلبيني واحد من أكبر النسور وأقواها في العالم.'],
