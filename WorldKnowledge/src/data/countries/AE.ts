@@ -21,8 +21,8 @@ export const AE = country(
     'pt-BR': ['O Burj Khalifa nos Emirados é o prédio mais alto do mundo inteiro!', 'Os Emirados Árabes Unidos são formados por 7 lugares menores chamados emirados.'],
     id: ['Burj Khalifa di UEA adalah gedung tertinggi di seluruh dunia!', 'UEA terdiri dari 7 tempat kecil yang disebut emirat yang bergabung bersama.'],
     ja: [
-      'UAE（ユーエーイー）にあるブルジュ・ハリファは、世界(せかい)で一番(いちばん)高(たか)いビルです！',
-      'UAEは7つの小(ちい)さな国(くに)のまとまりでできています。それぞれを首長国(しゅちょうこく)とよびます。',
+      'ブルジュ・ハリファは、世界(せかい)で一番(いちばん)高(たか)いビルです！アラブ首長国連邦(しゅちょうこくれんぽう)にあります。',
+      'アラブ首長国連邦(しゅちょうこくれんぽう)は7つの小(ちい)さな国(くに)のまとまりでできています。それぞれを首長国(しゅちょうこく)とよびます。',
     ],
     ar: ['برج خليفة في الإمارات هو أطول مبنى في العالم كله!', 'الإمارات مكوَّنة من 7 أماكن صغيرة تُسمى الإمارات اجتمعت معاً.'],
     fr: ['Le Burj Khalifa aux Émirats est le bâtiment le plus haut du monde entier !', 'Les Émirats arabes unis sont composés de 7 petits endroits appelés émirats.'],
